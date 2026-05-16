@@ -1,68 +1,74 @@
 const alertEl = document.getElementById("alert");
 
-const map = L.map("map").setView([51.05, 4.45], 13);
+const map = L.map("map").setView([51.2351, 4.9706], 16);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
   attribution: "&copy; OpenStreetMap"
 }).addTo(map);
 
-let marker = null;
-let circle = null;
+const markers = {};
+let firstCenter = true;
 
-async function loadLocation() {
+async function loadLocations() {
   try {
     const res = await fetch("/api/location");
     const data = await res.json();
 
-    if (!data || !data.lat || !data.lng) {
-      alertEl.textContent = "Nog geen locatie ontvangen";
+    console.log("LOCATIONS", data);
+
+    if (!Array.isArray(data) || data.length === 0) {
+      alertEl.textContent = "Geen locaties ontvangen";
       return;
     }
 
-    const pos = [data.lat, data.lng];
+    let activeCount = 0;
 
-    if (!marker) {
-      marker = L.marker(pos).addTo(map);
-      map.setView(pos, 16);
-    } else {
-      marker.setLatLng(pos);
+    for (const item of data) {
+      if (!item.lat || !item.lng) continue;
+
+      const pos = [item.lat, item.lng];
+      const name = item.device || "Onbekend";
+
+      if (!markers[name]) {
+        markers[name] = L.marker(pos)
+          .addTo(map)
+          .bindPopup(name);
+      } else {
+        markers[name].setLatLng(pos);
+      }
+
+      markers[name].bindTooltip(name, {
+        permanent: true,
+        direction: "top"
+      });
+
+      if (firstCenter) {
+        map.setView(pos, 16);
+        firstCenter = false;
+      }
+
+      const age = Date.now() - item.time;
+      if (age < 30000) activeCount++;
     }
 
-    if (!circle) {
-      circle = L.circle(pos, {
-        radius: data.accuracy || 20
-      }).addTo(map);
+    if (activeCount > 0) {
+      alertEl.textContent = `${activeCount} actieve tracker(s)`;
+      alertEl.style.background = "green";
+      alertEl.style.color = "white";
     } else {
-      circle.setLatLng(pos);
-      circle.setRadius(data.accuracy || 20);
+      alertEl.textContent = "Geen actieve trackers";
+      alertEl.style.background = "red";
+      alertEl.style.color = "white";
     }
-
-const age = Date.now() - data.time;
-
-if (data.sos) {
-
-  alertEl.textContent = "SOS ACTIEF!";
-  alertEl.classList.add("sos");
-
-} else if (age < 30000) {
-
-  alertEl.textContent = "Locatie actief";
-  alertEl.style.background = "green";
-  alertEl.style.color = "white";
-
-} else {
-
-  alertEl.textContent = "Locatie niet actief";
-  alertEl.style.background = "red";
-  alertEl.style.color = "white";
-}
 
   } catch (err) {
     console.error(err);
     alertEl.textContent = "Server niet bereikbaar";
+    alertEl.style.background = "red";
+    alertEl.style.color = "white";
   }
 }
 
-loadLocation();
-setInterval(loadLocation, 5000);
+loadLocations();
+setInterval(loadLocations, 5000);
