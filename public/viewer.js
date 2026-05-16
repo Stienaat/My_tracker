@@ -38,13 +38,25 @@ async function loadLocation() {
       circle.setRadius(data.accuracy || 20);
     }
 
-    if (data.sos) {
-      alertEl.textContent = "SOS ACTIEF!";
-      alertEl.classList.add("sos");
-    } else {
-      alertEl.textContent = "Locatie actief";
-      alertEl.classList.remove("sos");
-    }
+const age = Date.now() - data.time;
+
+if (data.sos) {
+
+  alertEl.textContent = "SOS ACTIEF!";
+  alertEl.classList.add("sos");
+
+} else if (age < 30000) {
+
+  alertEl.textContent = "Locatie actief";
+  alertEl.style.background = "green";
+  alertEl.style.color = "white";
+
+} else {
+
+  alertEl.textContent = "Locatie niet actief";
+  alertEl.style.background = "red";
+  alertEl.style.color = "white";
+}
 
   } catch (err) {
     console.error(err);
