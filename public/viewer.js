@@ -29,6 +29,7 @@ async function loadLocations() {
 
       const pos = [item.lat, item.lng];
       const name = item.device || "Onbekend";
+      const labelClass = item.sos ? "sos-label" : "normal-label";
 
       if (!markers[name]) {
         markers[name] = L.marker(pos)
@@ -38,10 +39,11 @@ async function loadLocations() {
         markers[name].setLatLng(pos);
       }
 
-      markers[name].bindTooltip(name, {
-        permanent: true,
-        direction: "top"
-      });
+   markers[name].bindTooltip(name, {
+  permanent: true,
+  direction: "top",
+  className: labelClass
+});
 
       if (firstCenter) {
         map.setView(pos, 16);
