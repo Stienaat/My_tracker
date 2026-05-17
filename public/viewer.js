@@ -38,23 +38,26 @@ if (res.status === 403) {
     let activeCount = 0;
 
     for (const item of data) {
-      if (!item.lat || !item.lng) continue;
+      const name = item.device || "Onbekend";
+      
+        if (item.active === false) {
+        if (markers[name]) {
+          map.removeLayer(markers[name]);
+          delete markers[name];
+        }
+        continue;
+    }
 
+
+      if (!item.lat || !item.lng) continue;
+      const pos = [item.lat, item.lng];
       const age = Date.now() - item.time;
 
       if (age > 10 * 60 * 1000) {
         continue;
       }
 
-      const pos = [item.lat, item.lng];
-      const name = item.device || "Onbekend";
-      if (item.active === false) {
-      if (markers[name]) {
-        map.removeLayer(markers[name]);
-        delete markers[name];
-      }
-      continue;
-    }
+ 
 
 
       const labelClass = item.sos ? "sos-label" : "normal-label";
