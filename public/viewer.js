@@ -1,4 +1,6 @@
-let viewerPin = localStorage.getItem("viewer_pin");
+let viewerPin = prompt("PIN-code?");
+
+/*   let viewerPin = localStorage.getItem("viewer_pin");    */
 
 if (!viewerPin) {
   viewerPin = prompt("PIN-code?");
