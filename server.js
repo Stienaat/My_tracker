@@ -4,6 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 let locations = {};
+const VIEWER_PIN = process.env.VIEWER_PIN || "1234";
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -26,6 +27,12 @@ app.post("/api/location", (req, res) => {
 });
 
 app.get("/api/location", (req, res) => {
+  const pin = req.query.pin;
+
+  if (pin !== VIEWER_PIN) {
+    return res.status(403).json({ error: "Geen toegang" });
+  }
+
   res.json(Object.values(locations));
 });
 

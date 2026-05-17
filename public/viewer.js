@@ -1,3 +1,10 @@
+let viewerPin = localStorage.getItem("viewer_pin");
+
+if (!viewerPin) {
+  viewerPin = prompt("PIN-code?");
+  localStorage.setItem("viewer_pin", viewerPin);
+}
+
 const alertEl = document.getElementById("alert");
 
 const map = L.map("map").setView([51.2351, 4.9706], 16);
@@ -12,10 +19,16 @@ let firstCenter = true;
 
 async function loadLocations() {
   try {
-    const res = await fetch("/api/location");
-    const data = await res.json();
+    const res = await fetch("/api/location?pin=" + encodeURIComponent(viewerPin));
 
-    console.log("LOCATIONS", data);
+if (res.status === 403) {
+  localStorage.removeItem("viewer_pin");
+  alertEl.textContent = "Verkeerde PIN";
+  alertEl.style.background = "red";
+  alertEl.style.color = "white";
+  return;
+}
+    const data = await res.json();
 
     if (!Array.isArray(data) || data.length === 0) {
       alertEl.textContent = "Geen locaties ontvangen";
@@ -26,6 +39,12 @@ async function loadLocations() {
 
     for (const item of data) {
       if (!item.lat || !item.lng) continue;
+
+      const age = Date.now() - item.time;
+
+      if (age > 10 * 60 * 1000) {
+        continue;
+      }
 
       const pos = [item.lat, item.lng];
       const name = item.device || "Onbekend";
@@ -39,19 +58,18 @@ async function loadLocations() {
         markers[name].setLatLng(pos);
       }
 
-   markers[name].bindTooltip(name, {
-  permanent: true,
-  direction: "top",
-  className: labelClass
-});
+      markers[name].bindTooltip(name, {
+        permanent: true,
+        direction: "top",
+        className: labelClass
+      });
 
       if (firstCenter) {
         map.setView(pos, 16);
         firstCenter = false;
       }
 
-      const age = Date.now() - item.time;
-      if (age < 30000) activeCount++;
+      activeCount++;
     }
 
     if (activeCount > 0) {
