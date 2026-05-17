@@ -12,14 +12,15 @@ app.use(express.static("public"));
 app.post("/api/location", (req, res) => {
   const device = req.body.device || "Onbekend";
 
-  locations[device] = {
-    device,
-    lat: req.body.lat,
-    lng: req.body.lng,
-    accuracy: req.body.accuracy,
-    time: req.body.time,
-    sos: req.body.sos === true
-  };
+locations[device] = {
+  device,
+  lat: req.body.lat,
+  lng: req.body.lng,
+  accuracy: req.body.accuracy,
+  time: req.body.time,
+  sos: req.body.sos === true,
+  active: req.body.active !== false
+};
 
   console.log("Nieuwe locatie:", locations[device]);
 

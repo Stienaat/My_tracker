@@ -48,6 +48,15 @@ if (res.status === 403) {
 
       const pos = [item.lat, item.lng];
       const name = item.device || "Onbekend";
+      if (item.active === false) {
+      if (markers[name]) {
+        map.removeLayer(markers[name]);
+        delete markers[name];
+      }
+      continue;
+    }
+
+
       const labelClass = item.sos ? "sos-label" : "normal-label";
 
       if (!markers[name]) {
