@@ -28,13 +28,17 @@ locations[device] = {
 });
 
 app.get("/api/location", (req, res) => {
+
   const pin = req.query.pin;
 
-  if (pin !== VIEWER_PIN) {
+  if (!pin) {
     return res.status(403).json({ error: "Geen toegang" });
   }
 
-  res.json(Object.values(locations));
+  const result = Object.values(locations)
+    .filter(item => item.group === pin);
+
+  res.json(result);
 });
 
 app.listen(PORT, () => {
