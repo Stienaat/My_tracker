@@ -11,19 +11,24 @@ app.use(express.static("public"));
 
 app.post("/api/location", (req, res) => {
   const device = req.body.device || "Onbekend";
+  const group = req.body.group || "";
+  const key = group + ":" + device;
 
-locations[device] = {
-  device,
-  group: req.body.group,
-  lat: req.body.lat,
-  lng: req.body.lng,
-  accuracy: req.body.accuracy,
-  time: req.body.time,
-  sos: req.body.sos === true,
-  active: req.body.active !== false
-};
-  console.log("BODY:", req.body);
-  console.log("Nieuwe locatie:", locations[device]);
+  const old = locations[key] || {};
+
+  locations[key] = {
+    ...old,
+    device,
+    group,
+    lat: req.body.lat ?? old.lat,
+    lng: req.body.lng ?? old.lng,
+    accuracy: req.body.accuracy ?? old.accuracy,
+    time: req.body.time || Date.now(),
+    sos: req.body.sos === true,
+    active: req.body.active !== false
+  };
+
+  console.log("Update:", locations[key]);
 
   res.json({ ok: true });
 });
