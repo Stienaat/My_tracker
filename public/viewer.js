@@ -1,4 +1,4 @@
-let viewerPin = prompt("PIN-code?");
+let viewerPin = prompt("Gezinscode?");
 
 /*   let viewerPin = localStorage.getItem("viewer_pin");    */
 
@@ -21,7 +21,9 @@ let firstCenter = true;
 
 async function loadLocations() {
   try {
-    const res = await fetch("/api/location?pin=" + encodeURIComponent(viewerPin));
+   const res = await fetch(
+  "/api/location?pin=" + encodeURIComponent(viewerPin)
+);
 
 if (res.status === 403) {
   localStorage.removeItem("viewer_pin");
