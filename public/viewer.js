@@ -90,7 +90,7 @@ if (item.sos) {
   labelText = "SOS - " + name;
   labelClass = "sos-label";
 } else if (isLive) {
-  labelText = "LIVE - " + name;
+  labelText = name;
   labelClass = "live-label";
 } else {
   labelText = "NIET ACTIEF - " + name;
