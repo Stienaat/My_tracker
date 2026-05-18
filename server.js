@@ -14,6 +14,7 @@ app.post("/api/location", (req, res) => {
 
 locations[device] = {
   device,
+  group: req.body.group,
   lat: req.body.lat,
   lng: req.body.lng,
   accuracy: req.body.accuracy,
