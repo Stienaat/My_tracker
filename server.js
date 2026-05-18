@@ -21,7 +21,7 @@ locations[device] = {
   sos: req.body.sos === true,
   active: req.body.active !== false
 };
-
+  console.log("BODY:", req.body);
   console.log("Nieuwe locatie:", locations[device]);
 
   res.json({ ok: true });
