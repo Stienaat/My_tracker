@@ -1,11 +1,36 @@
 let viewerPin = prompt("Gezinscode?");
 
-/*   let viewerPin = localStorage.getItem("viewer_pin");    */
-
 if (!viewerPin) {
   viewerPin = prompt("PIN-code?");
   localStorage.setItem("viewer_pin", viewerPin);
 }
+
+const greenIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const blueIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const redIcon = new L.Icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
 const alertEl = document.getElementById("alert");
 
@@ -56,23 +81,35 @@ if (res.status === 403) {
       if (!item.lat || !item.lng) continue;
       const pos = [item.lat, item.lng];
       const age = Date.now() - item.time;
+      const isLive = item.active === true && age < 60000;
+
+      let markerIcon = blueIcon;
+
+      if (item.sos) {
+        markerIcon = redIcon;
+      } else if (isLive) {
+        markerIcon = greenIcon;
+      }
 
       if (age > 10 * 60 * 1000) {
         continue;
       }
 
- 
-
-
-      const labelClass = item.sos ? "sos-label" : "normal-label";
+       const labelClass = item.sos ? "sos-label" : "normal-label";
 
       if (!markers[name]) {
-        markers[name] = L.marker(pos)
+
+        markers[name] = L.marker(pos, {
+          icon: markerIcon
+        })
           .addTo(map)
           .bindPopup(name);
+
       } else {
+
         markers[name].setLatLng(pos);
-      }
+        markers[name].setIcon(markerIcon);
+}
 
       markers[name].bindTooltip(name, {
         permanent: true,
