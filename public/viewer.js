@@ -80,42 +80,38 @@ if (res.status === 403) {
 
       if (!item.lat || !item.lng) continue;
       const pos = [item.lat, item.lng];
-      const age = Date.now() - item.time;
-      const isLive = item.active === true && age < 60000;
+ const age = Date.now() - item.time;
+const isLive = item.active === true && age < 60000;
 
-      let markerIcon = blueIcon;
+let labelText = name;
+let labelClass = "offline-label";
 
-      if (item.sos) {
-        markerIcon = redIcon;
-      } else if (isLive) {
-        markerIcon = greenIcon;
-      }
-
-      if (age > 10 * 60 * 1000) {
-        continue;
-      }
-
-       const labelClass = item.sos ? "sos-label" : "normal-label";
-
-      if (!markers[name]) {
-
-        markers[name] = L.marker(pos, {
-          icon: markerIcon
-        })
-          .addTo(map)
-          .bindPopup(name);
-
-      } else {
-
-        markers[name].setLatLng(pos);
-        markers[name].setIcon(markerIcon);
+if (item.sos) {
+  labelText = "SOS - " + name;
+  labelClass = "sos-label";
+} else if (isLive) {
+  labelText = "LIVE - " + name;
+  labelClass = "live-label";
+} else {
+  labelText = "NIET ACTIEF - " + name;
+  labelClass = "offline-label";
 }
 
-      markers[name].bindTooltip(name, {
-        permanent: true,
-        direction: "top",
-        className: labelClass
-      });
+if (!markers[name]) {
+  markers[name] = L.marker(pos)
+    .addTo(map)
+    .bindPopup(name);
+} else {
+  markers[name].setLatLng(pos);
+}
+
+markers[name].unbindTooltip();
+
+markers[name].bindTooltip(labelText, {
+  permanent: true,
+  direction: "top",
+  className: labelClass
+});
 
       if (firstCenter) {
         map.setView(pos, 16);
