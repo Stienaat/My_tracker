@@ -87,13 +87,13 @@ let labelText = name;
 let labelClass = "offline-label";
 
 if (item.sos) {
-  labelText = "SOS - " + name;
+  labelText = name;
   labelClass = "sos-label";
 } else if (isLive) {
   labelText = name;
   labelClass = "live-label";
 } else {
-  labelText = "NIET ACTIEF - " + name;
+  labelText = name;
   labelClass = "offline-label";
 }
 
