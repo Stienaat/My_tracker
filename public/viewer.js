@@ -107,10 +107,18 @@ if (!markers[name]) {
 
 markers[name].unbindTooltip();
 
+let accuracyClass = "acc-good";
+
+if (item.accuracy > 50) {
+  accuracyClass = "acc-bad";
+} else if (item.accuracy > 20) {
+  accuracyClass = "acc-medium";
+}
+
 markers[name].bindTooltip(labelText, {
   permanent: true,
   direction: "top",
-  className: labelClass
+  className: `${labelClass} ${accuracyClass}`
 });
 
       if (firstCenter) {
