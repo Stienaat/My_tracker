@@ -33,19 +33,14 @@ app.post("/api/location", (req, res) => {
   res.json({ ok: true });
 });
 
-app.get("/api/location", (req, res) => {
+const now = Date.now();
 
-  const pin = req.query.pin;
+const result = Object.values(locations)
+  .filter(item => item.group === pin)
+  .filter(item => item.active !== false)
+  .filter(item => now - item.time < 15000);
 
-  if (!pin) {
-    return res.status(403).json({ error: "Geen toegang" });
-  }
-
-  const result = Object.values(locations)
-    .filter(item => item.group === pin);
-
-  res.json(result);
-});
+res.json(result);
 
 app.listen(PORT, () => {
   console.log(`Tracker server gestart op poort ${PORT}`);
