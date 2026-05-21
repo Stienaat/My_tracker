@@ -38,15 +38,15 @@ app.get("/api/location", (req, res) => {
   const pin = req.query.pin;
 
   if (!pin) {
-    return res.status(403).json({ error: "Geen toegang" });
+    return res.status(403).json({ error: "Geen code" });
   }
 
-  const now = Date.now();
-
   const result = Object.values(locations)
-    .filter(item => item.group === pin)
-    .filter(item => item.active !== false)
-    .filter(item => now - item.time < 15000);
+    .filter(item => item.group === pin);
+
+  if (result.length === 0) {
+    return res.status(404).json({ error: "Geen tracker voor deze code" });
+  }
 
   res.json(result);
 });
